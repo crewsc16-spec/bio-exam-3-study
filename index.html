@@ -50,6 +50,20 @@
   .topbar input::placeholder { color: rgba(255,255,255,.5); }
   .topbar input:focus { outline: none; background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.4); box-shadow: 0 0 0 3px rgba(255,255,255,.1); }
 
+  /* TOPBAR NAV WRAPPER (desktop: inline) */
+  .topbar-nav { display: contents; }
+  /* MOBILE HAMBURGER */
+  .topbar-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 4px 8px; line-height: 1; margin-left: auto; }
+  @media (max-width: 768px) {
+    .topbar { padding: 10px 14px; }
+    .topbar-toggle { display: block; }
+    .topbar .search-box { margin-left: 0; order: 99; width: 100%; }
+    .topbar input { width: 100%; }
+    .topbar-nav { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; overflow: hidden; max-height: 0; opacity: 0; transition: max-height .3s ease, opacity .2s ease, margin .3s ease; margin-top: 0; }
+    .topbar-nav.open { max-height: 500px; opacity: 1; margin-top: 8px; }
+    .topbar-divider { display: none; }
+  }
+
   /* ==================== SECTIONS ==================== */
   .section { display: none; max-width: 960px; margin: 0 auto; padding: 28px 24px 40px; animation: fadeUp .35s ease-out; }
   .section.active { display: block; }
@@ -347,23 +361,26 @@
 
 <div class="topbar">
   <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:800;color:#fff;margin-right:8px;letter-spacing:-.3px;text-shadow:0 1px 4px rgba(0,0,0,.2);">Bio 3</span>
-  <button onclick="showSection('w6',this)">Mol Genetics</button>
-  <button class="active" onclick="showSection('w7',this)">Heredity</button>
-  <button onclick="showSection('w8',this)">Hered Disease</button>
-  <span style="width:1px;height:22px;background:rgba(255,255,255,.25);margin:0 4px;flex-shrink:0;"></span>
-  <button onclick="showSection('flashcards',this)">Flashcards</button>
-  <button onclick="showSection('quiz',this)">Quiz</button>
-  <button onclick="showSection('tf',this)">True/False</button>
-  <button onclick="showSection('ordering',this)">Ordering</button>
-  <button onclick="showSection('matching',this)">Matching</button>
-  <button onclick="showSection('memory',this)">Memory</button>
-  <button onclick="showSection('fitb',this)">Fill Blank</button>
-  <button onclick="showSection('scenarios',this)">Scenarios</button>
-  <button onclick="showSection('speed',this)">Speed</button>
-  <button onclick="showSection('diagrams',this)">Diagrams</button>
-  <button onclick="showSection('test',this)">Full Test</button>
-  <button onclick="showSection('videos',this)">Videos</button>
-  <span class="search-box"><input type="text" id="searchBox" placeholder="Search topics..." oninput="doSearch(this.value)"></span>
+  <button class="topbar-toggle" onclick="document.getElementById('topbarNav').classList.toggle('open');this.textContent=this.textContent==='☰'?'✕':'☰'" aria-label="Toggle menu">☰</button>
+  <div class="topbar-nav" id="topbarNav">
+    <button onclick="showSection('w6',this)">Mol Genetics</button>
+    <button class="active" onclick="showSection('w7',this)">Heredity</button>
+    <button onclick="showSection('w8',this)">Hered Disease</button>
+    <span class="topbar-divider" style="width:1px;height:22px;background:rgba(255,255,255,.25);margin:0 4px;flex-shrink:0;"></span>
+    <button onclick="showSection('flashcards',this)">Flashcards</button>
+    <button onclick="showSection('quiz',this)">Quiz</button>
+    <button onclick="showSection('tf',this)">True/False</button>
+    <button onclick="showSection('ordering',this)">Ordering</button>
+    <button onclick="showSection('matching',this)">Matching</button>
+    <button onclick="showSection('memory',this)">Memory</button>
+    <button onclick="showSection('fitb',this)">Fill Blank</button>
+    <button onclick="showSection('scenarios',this)">Scenarios</button>
+    <button onclick="showSection('speed',this)">Speed</button>
+    <button onclick="showSection('diagrams',this)">Diagrams</button>
+    <button onclick="showSection('test',this)">Full Test</button>
+    <button onclick="showSection('videos',this)">Videos</button>
+    <span class="search-box"><input type="text" id="searchBox" placeholder="Search topics..." oninput="doSearch(this.value)"></span>
+  </div>
 </div>
 
 <!-- ============================================================ -->
@@ -1156,13 +1173,17 @@
 /* ===== SECTION NAVIGATION ===== */
 function showSection(id, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.topbar button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.topbar button:not(.topbar-toggle)').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (btn) btn.classList.add('active');
   if (id !== 'speed' && typeof speedTimerInterval !== 'undefined' && speedTimerInterval) {
     clearInterval(speedTimerInterval);
     speedTimerInterval = null;
   }
+  /* auto-collapse mobile menu */
+  var nav = document.getElementById('topbarNav');
+  var tog = document.querySelector('.topbar-toggle');
+  if (nav && nav.classList.contains('open')) { nav.classList.remove('open'); if (tog) tog.textContent = '\u2630'; }
 }
 
 /* ===== SEARCH ===== */
